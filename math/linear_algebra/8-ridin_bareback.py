@@ -1,21 +1,27 @@
 #!/usr/bin/env python3
-"""mat_mul function"""
+""" mat_mul function """
 
 
 def mat_mul(mat1, mat2):
-    """
-    Performs matrix multiplication.
+    """_summary_
 
     Args:
-    - mat1 (list of lists): The first input matrix.
-    - mat2 (list of lists): The second input matrix.
+        mat1 (2D-list): List to multiply
+        mat2 (2D-list): List to multiply by
 
     Returns:
-    - list of lists: The new matrix resulting from matrix multiplication.
-      If the two matrices cannot be multiplied, returns None.
+        2D-list: The multiple of mat1 and mat2
     """
     if len(mat1[0]) != len(mat2):
         return None
 
-    result = [[sum(a * b for a, b in zip(row1, col2)) for col2 in zip(*mat2)] for row1 in mat1]
-    return result
+    mul = []
+    for i in range(len(mat1)):
+        row = []
+        for j in range(len(mat2[0])):
+            sum = 0
+            for k in range(len(mat2)):
+                sum += mat1[i][k] * mat2[k][j]
+            row.append(sum)
+        mul.append(row)
+    return mul
