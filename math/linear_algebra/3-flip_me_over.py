@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
+""" matrix_shape function """
+
+
 def matrix_transpose(matrix):
     """
-    Transposes a 2D matrix.
+    Returns the transpose of a 2D matrix.
 
     Args:
     - matrix (list of lists): The input 2D matrix.
