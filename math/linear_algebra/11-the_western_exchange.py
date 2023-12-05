@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 """np_transpose function"""
 
-import numpy as np
-
 
 def np_transpose(matrix):
     """
