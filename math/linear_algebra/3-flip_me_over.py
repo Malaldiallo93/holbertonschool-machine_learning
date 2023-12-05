@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
-""" matrix_shape function """
+""" matrix_transpose function """
 
 
 def matrix_transpose(matrix):
     """
-    Returns the transpose of a 2D matrix.
+    Transposes a matrix
 
     Args:
-    - matrix (list of lists): The input 2D matrix.
+        matrix (2Dimensional list): The matrix to transpose
 
     Returns:
-    - list of lists: The transposed matrix.
+        list: A new matrix corresponding to the transpose of `matrix`
     """
     return [list(row) for row in zip(*matrix)]
