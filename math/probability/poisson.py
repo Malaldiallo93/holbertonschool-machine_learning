@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+"""poisson_function"""
 
 
 class Poisson:
