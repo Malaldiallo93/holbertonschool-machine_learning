@@ -77,7 +77,7 @@ class Poisson:
         return pmf_value
 
     @staticmethod
-    def factorial(n):
+    def factorial(self, n):
         """
         Calculates the factorial of a number.
 
@@ -89,4 +89,9 @@ class Poisson:
         """
         if n == 0:
             return 1
-        return n * Poisson.factorial(n - 1)
+
+        result = 1
+        for i in range(1, n + 1):
+            result *= i
+
+        return result
