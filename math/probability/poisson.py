@@ -64,8 +64,8 @@ class Poisson:
         # Convert k to an integer
         k = int(k)
 
-        # Check if k is out of range
-        if k < 0:
+        # Check if k is a non-negative integer
+        if k < 0 or k != int(k):
             return 0
 
         # Calculate the PMF value
