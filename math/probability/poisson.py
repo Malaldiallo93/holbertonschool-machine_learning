@@ -53,7 +53,8 @@ class Poisson:
 
     def pmf(self, k):
         """
-        Calculates the value of the PMF for a given number of "successes."
+        Calculates the value of the PMF for a given number
+        of "successes."
 
         Args:
             k (int): The number of "successes."
@@ -76,7 +77,6 @@ class Poisson:
         )
         return pmf_value
 
-    @staticmethod
     def factorial(self, n):
         """
         Calculates the factorial of a number.
