@@ -7,7 +7,7 @@ class Exponential:
     Represents an exponential distribution.
 
     Attributes:
-        lambtha (float): The expected number of occurences
+        lambtha (float): The expected number of occurrences
         in a given time frame.
 
     Raises:
@@ -24,7 +24,8 @@ class Exponential:
             data (list, optional): A list of data points to be used
             to estimate the distribution.
             lambtha (float, optional): The expected number of
-            occurences in a given time frame.
+            occurrences in a given time frame.
+
         Raises:
             TypeError: If `data` is not a list.
             ValueError: If `data` does not contain at least two values,
@@ -47,4 +48,5 @@ class Exponential:
         if data is None:
             self.lambtha = lambtha
         else:
-            self.lambtha = sum(data) / len(data)
+            # Calculate lambtha as the inverse of the mean
+            self.lambtha = 1 / (sum(data) / len(data))
