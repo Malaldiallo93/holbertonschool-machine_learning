@@ -67,7 +67,8 @@ class NeuralNetwork:
             X (numpy.ndarray): Input data with shape (nx, m).
 
         Returns:
-            Tuple: Activated outputs for the hidden layer (__A1) and the output layer (__A2).
+            Tuple: Activated outputs for the hidden layer (__A1)
+            and the output layer (__A2).
         """
         Z1 = np.dot(self.W1, X) + self.b1
         self.__A1 = 1 / (1 + np.exp(-Z1))
