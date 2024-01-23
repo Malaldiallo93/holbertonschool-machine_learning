@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""NeuralNetwork function"""
+"""class NeuralNetwork"""
 import numpy as np
 
 
