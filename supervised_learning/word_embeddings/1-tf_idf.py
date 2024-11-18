@@ -2,11 +2,11 @@
 """
     TF-IDF
 """
+
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 def tf_idf(sentences, vocab=None):
-
     """
     Creates a TF-IDF embedding for a list of sentences.
 
