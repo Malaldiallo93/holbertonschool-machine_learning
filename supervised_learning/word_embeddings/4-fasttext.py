@@ -2,15 +2,12 @@
 """
     Train fastText model
 """
-
-from gensim.models import FastText
-
+import gensim  # Updated to match the expected import pattern
 
 def fasttext_model(sentences, vector_size=100, min_count=5, negative=5,
                    window=5, cbow=True, epochs=5, seed=0, workers=1):
     """
     Creates, builds, and trains a gensim FastText model.
-
     Args:
         sentences (list): List of sentences to train the model on.
         vector_size (int): Dimensionality of the embedding vectors
@@ -26,7 +23,6 @@ def fasttext_model(sentences, vector_size=100, min_count=5, negative=5,
         seed (int): Seed for random number generation (default is 0).
         workers (int): Number of CPU cores to use for training the model
             (default is 1).
-
     Returns:
         model (gensim.models.FastText): The trained FastText model.
     """
