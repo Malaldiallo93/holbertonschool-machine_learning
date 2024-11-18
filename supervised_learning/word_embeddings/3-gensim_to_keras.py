@@ -5,11 +5,9 @@
 from gensim.models import Word2Vec
 from keras.layers import Embedding
 
-
 def gensim_to_keras(model):
     """
-        converts a gensim word2vec model to a keras Embedding layer
-
+        Converts a gensim word2vec model to a keras Embedding layer
     :param model: trained gensim word2vec model
     :return: trainable keras Embedding
     """
