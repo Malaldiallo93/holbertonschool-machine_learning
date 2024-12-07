@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """
-Class Dataset to load and preprocess the dataset
+Class Dataset to load and preprocess a dataset for machine translation
 """
 import tensorflow.compat.v2 as tf
 import tensorflow_datasets as tfds
+from transformers import AutoTokenizer
 
 
 class Dataset:
@@ -14,18 +15,20 @@ class Dataset:
         """
         Initialize the dataset by loading and tokenizing
         """
+        # Load the training and validation datasets
         self.data_train, self.data_valid = tfds.load(
             'ted_hrlr_translate/pt_to_en',
             split=['train', 'validation'],
             as_supervised=True
         )
-        self.tokenizer_en, self.tokenizer_pt = self.tokenize_dataset(
+        # Create the tokenizers
+        self.tokenizer_pt, self.tokenizer_en = self.tokenize_dataset(
             self.data_train
         )
 
     def tokenize_dataset(self, data):
         """
-        Creates sub-word tokenizers for the dataset.
+        Creates sub-word tokenizers for the dataset using pre-trained models.
 
         Args:
             data (tf.data.Dataset): A dataset containing tuples (pt, en),
@@ -36,14 +39,20 @@ class Dataset:
             tuple: (tokenizer_pt, tokenizer_en)
                    Portuguese and English tokenizers, respectively.
         """
-        tokenizer_pt = tfds.deprecated.text.SubwordTextEncoder.\
-            build_from_corpus(
-                (pt.numpy() for pt, _ in data),
-                target_vocab_size=2 ** 15
-            )
-        tokenizer_en = tfds.deprecated.text.SubwordTextEncoder.\
-            build_from_corpus(
-                (en.numpy() for _, en in data),
-                target_vocab_size=2 ** 15
-            )
+        # Load pre-trained tokenizers
+        tokenizer_pt = AutoTokenizer.from_pretrained(
+            "neuralmind/bert-base-portuguese-cased",
+            model_max_length=2**13
+        )
+        tokenizer_en = AutoTokenizer.from_pretrained(
+            "bert-base-uncased",
+            model_max_length=2**13
+        )
+
+        # Ensure tokenizers are trained with our data
+        for pt, _ in data:
+            tokenizer_pt.add_tokens(pt.numpy().decode('utf-8'))
+        for _, en in data:
+            tokenizer_en.add_tokens(en.numpy().decode('utf-8'))
+
         return tokenizer_pt, tokenizer_en
