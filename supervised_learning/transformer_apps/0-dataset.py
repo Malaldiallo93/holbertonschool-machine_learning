@@ -2,7 +2,6 @@
 """
 Class Dataset to load and preprocess a dataset for machine translation
 """
-import tensorflow.compat.v2 as tf
 import tensorflow_datasets as tfds
 from transformers import AutoTokenizer
 
@@ -29,12 +28,11 @@ class Dataset:
     def tokenize_dataset(self, data):
         """
         Creates sub-word tokenizers for the dataset using pre-trained models.
-
+        
         Args:
             data (tf.data.Dataset): A dataset containing tuples (pt, en),
                                     where `pt` is a Portuguese sentence and
                                     `en` is an English sentence.
-
         Returns:
             tuple: (tokenizer_pt, tokenizer_en)
                    Portuguese and English tokenizers, respectively.
@@ -49,7 +47,7 @@ class Dataset:
             model_max_length=2**13
         )
 
-        # Ensure tokenizers are trained with our data
+        # Extend tokenizers with dataset-specific vocabulary
         for pt, _ in data:
             tokenizer_pt.add_tokens(pt.numpy().decode('utf-8'))
         for _, en in data:
