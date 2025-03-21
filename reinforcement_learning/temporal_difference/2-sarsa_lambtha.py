@@ -1,71 +1,87 @@
 #!/usr/bin/env python3
 """
-    SARSA(λ) algorithm
+SARSA(λ) algorithm (with eligibility traces), corrected version.
 """
 import numpy as np
 
 
-def epsilon_greedy(state, Q, epsilon):
-    """ uses epsilon-greedy to determine the next action"""
-    p = np.random.uniform(0, 1)
-    if p > epsilon:
-        action = np.argmax(Q[state, :])
+def epsilon_greedy(Q, state, epsilon):
+    """
+    Determines the next action using the epsilon-greedy policy.
+
+    Parameters:
+        Q (numpy.ndarray): The Q-table, where each entry Q[s, a] represents
+                           the expected reward for state `s` and action `a`.
+        state (int): The current state.
+        epsilon (float): The epsilon value for the epsilon-greedy policy.
+
+    Returns:
+        int: The index of the action to take next.
+    """
+    # Random exploration vs. greedy exploitation
+    if np.random.uniform(0, 1) > epsilon:
+        return np.argmax(Q[state])
     else:
-        action = np.random.randint(0, int(Q.shape[1]))
-    return action
+        return np.random.randint(0, Q.shape[1])
 
 
 def sarsa_lambtha(env, Q, lambtha, episodes=5000, max_steps=100,
-                  alpha=0.1, gamma=0.99, epsilon=1, min_epsilon=0.1,
-                  epsilon_decay=0.05):
+                  alpha=0.1, gamma=0.99, epsilon=1.0,
+                  min_epsilon=0.1, epsilon_decay=0.05):
     """
-        function that performs SARSA(λ)
+    Performs the SARSA(λ) algorithm (with eligibility traces) to estimate
+    a Q-table.
 
-    :param env: openAI env instance
-    :param Q: ndarray, shape(s,a) containing the Q table
-    :param lambtha: eligibility trace factor
-    :param episodes: total number of episodes to train over
-    :param max_steps: max number of steps per episode
-    :param alpha: learning rate
-    :param gamma: discount rate
-    :param epsilon: initial threshold for epsilon greedy
-    :param min_epsilon: minimum value that epsilon should decay to
-    :param epsilon_decay: decay rate for updating epsilon between episodes
+    Parameters:
+        env (gym.Env): The environment instance (e.g., FrozenLake).
+        Q (np.ndarray): The Q-table to update.
+        lambtha (float): The eligibility trace factor (λ).
+        episodes (int): The total number of episodes to train over.
+        max_steps (int): The maximum number of steps per episode.
+        alpha (float): The learning rate.
+        gamma (float): The discount rate.
+        epsilon (float): The initial threshold for epsilon-greedy.
+        min_epsilon (float): The lower bound for epsilon.
+        epsilon_decay (float): The decay rate for epsilon per episode.
 
-    :return: Q, updated Q table
+    Returns:
+        np.ndarray: The updated Q-table after training.
     """
-    epsilon_init = epsilon
+    initial_epsilon = epsilon
 
-    for ep in range(episodes):
-        # start new episode
-        state = env.reset()
-        action = epsilon_greedy(state, Q, epsilon)
-        eligibility = np.zeros_like(Q)
+    for episode in range(episodes):
+        # Reset environment and get initial state
+        state = env.reset()[0]  # for newer gym versions, reset() returns (obs, info)
+        action = epsilon_greedy(Q, state, epsilon)
 
-        for step in range(max_steps):
-            # determine action based on policy
-            next_state, reward, done, _ = env.step(action)
-            next_action = epsilon_greedy(next_state, Q, epsilon)
+        # Initialize eligibility traces to zero
+        eligibility_traces = np.zeros_like(Q)
 
-            # TD error
-            delta = (reward + (gamma * Q[next_state, next_action])
-                     - Q[state, action])
+        for _ in range(max_steps):
+            # Interact with the environment
+            next_state, reward, done, truncated, _ = env.step(action)
+            next_action = epsilon_greedy(Q, next_state, epsilon)
 
-            # update eligibilities
-            eligibility[state, action] += 1
-            eligibility *= lambtha * gamma
+            # Compute TD error
+            delta = reward + gamma * Q[next_state, next_action] - Q[state, action]
 
-            # Update value function
-            Q += alpha * delta * eligibility
+            # Decay all traces
+            eligibility_traces *= gamma * lambtha
 
-            if done:
+            # Increase trace for the visited (state, action)
+            eligibility_traces[state, action] += 1
+
+            # Update Q-values
+            Q += alpha * delta * eligibility_traces
+
+            # Move to the next state/action
+            state, action = next_state, next_action
+
+            if done or truncated:
                 break
 
-            state = next_state
-            action = next_action
-
-        # update epsilon
-        epsilon = min_epsilon + (epsilon_init - min_epsilon) *\
-            np.exp(-epsilon_decay * ep)
+        # Exponential decay of epsilon after each episode
+        epsilon = min_epsilon + (initial_epsilon - min_epsilon) * \
+                  np.exp(-epsilon_decay * episode)
 
     return Q
