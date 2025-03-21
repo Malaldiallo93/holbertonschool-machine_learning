@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """
-Monte Carlo algorithm - Alternative Version
+Monte Carlo algorithm
 """
 import numpy as np
+
 
 def monte_carlo(env, V, policy, episodes=5000, max_steps=100, alpha=0.1,
                 gamma=0.99):
@@ -22,31 +23,39 @@ def monte_carlo(env, V, policy, episodes=5000, max_steps=100, alpha=0.1,
     Returns:
         Updated value estimates V.
     """
-    for _ in range(episodes):
-        # Réinitialiser l'environnement et obtenir l'état initial
-        state, _ = env.reset()
-        episode_data = []  # Stocker la séquence (état, récompense)
+    for episode in range(episodes):
+        # reset the environment and get initial state
+        state = env.reset()[0]
+        episode_data = []
 
-        # Génération de l'épisode en suivant la politique
-        for _ in range(max_steps):
-            action = policy(state)  # Sélectionner une action
-            next_state, reward, done, _, _ = env.step(action)  # Exécuter l'action
-            episode_data.append((state, reward))  # Enregistrer l'état et la récompense
+        for step in range(max_steps):
+            # select action based on policy
+            action = policy(state)
 
-            if done:
-                break  # Fin de l'épisode
+            # take action
+            next_state, reward, terminated, truncated, _ = env.step(
+                action)
 
-            state = next_state  # Passer à l'état suivant
+            # Append state and reward to the episode history
+            episode_data.append((state, reward))
 
-        # Mise à jour de la fonction de valeur V
-        G = 0  # Retour cumulé
-        visited_states = set()  # Suivi des états déjà mis à jour
+            if terminated or truncated:
+                break
 
+            # move to the next state
+            state = next_state
+
+        G = 0
+        episode_data = np.array(episode_data, dtype=int)
+
+        # Compute the returns for each state in the episode
         for state, reward in reversed(episode_data):
-            G = gamma * G + reward  # Calcul du retour actualisé
+            # calculate this episode's return
+            G = reward + gamma * G
 
-            if state not in visited_states:  # Première visite uniquement
-                visited_states.add(state)
-                V[state] += alpha * (G - V[state])  # Mise à jour incrémentale de V
+            # if this is a novel state
+            if state not in episode_data[:episode, 0]:
+                # Update the value function V(s)
+                V[state] = V[state] + alpha * (G - V[state])
 
     return V
