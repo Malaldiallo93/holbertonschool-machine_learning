@@ -51,7 +51,8 @@ def sarsa_lambtha(env, Q, lambtha, episodes=5000, max_steps=100,
 
     for episode in range(episodes):
         # Reset environment and get initial state
-        state = env.reset()[0]  # for newer gym versions, reset() returns (obs, info)
+        # for newer gym versions, reset() returns (obs, info)
+        state = env.reset()[0]
         action = epsilon_greedy(Q, state, epsilon)
 
         # Initialize eligibility traces to zero
@@ -63,7 +64,8 @@ def sarsa_lambtha(env, Q, lambtha, episodes=5000, max_steps=100,
             next_action = epsilon_greedy(Q, next_state, epsilon)
 
             # Compute TD error
-            delta = reward + gamma * Q[next_state, next_action] - Q[state, action]
+            delta = reward + gamma * Q[next_state,
+                                       next_action] - Q[state, action]
 
             # Decay all traces
             eligibility_traces *= gamma * lambtha
@@ -82,6 +84,6 @@ def sarsa_lambtha(env, Q, lambtha, episodes=5000, max_steps=100,
 
         # Exponential decay of epsilon after each episode
         epsilon = min_epsilon + (initial_epsilon - min_epsilon) * \
-                  np.exp(-epsilon_decay * episode)
+            np.exp(-epsilon_decay * episode)
 
     return Q
