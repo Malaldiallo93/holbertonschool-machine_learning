@@ -16,9 +16,6 @@ from rl.policy import EpsGreedyQPolicy, LinearAnnealedPolicy
 from rl.util import *
 from rl.core import Processor
 
-#####################################
-#         Setup PARAMETER           #
-#####################################
 
 # Configuration parameters for the whole setup
 seed = 42
@@ -35,9 +32,6 @@ max_episodes = 10  # Limit training episodes, will run until solved
                     # if smaller than 1
 
 
-#####################################
-#            Setup ENV              #
-#####################################
 
 class CompatibilityWrapper(gym.Wrapper):
     """
@@ -99,9 +93,6 @@ def create_atari_environment(env_name):
     return env
 
 
-#####################################
-#            CNN model              #
-#####################################
 
 def build_model(window_length, shape, actions):
     """
@@ -124,9 +115,6 @@ def build_model(window_length, shape, actions):
     return model
 
 
-#####################################
-#              AGENT                #
-#####################################
 
 class AtariProcessor(Processor):
     """

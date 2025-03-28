@@ -17,9 +17,6 @@ from rl.core import Processor
 from rl.callbacks import Callback
 
 
-#####################################
-#            Setup ENV              #
-#####################################
 class CompatibilityWrapper(gym.Wrapper):
     """
         Compatibility wrapper for gym env to ensure
@@ -80,9 +77,7 @@ def create_atari_environment(env_name):
     return env
 
 
-#####################################
-#            CNN model              #
-#####################################
+
 
 def build_model(window_length, shape, actions):
     """
@@ -105,9 +100,6 @@ def build_model(window_length, shape, actions):
     return model
 
 
-#####################################
-#              AGENT                #
-#####################################
 
 class AtariProcessor(Processor):
     """
