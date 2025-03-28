@@ -14,14 +14,17 @@ def softmax(x):
 
 def policy_gradient(state, weight):
     """
-    Compute the Monte-Carlo policy gradient based on a state and a weight matrix.
+    Compute the Monte-Carlo policy gradient
+    based on a state and a weight matrix.
 
     Args:
-        state (numpy.ndarray): A 1D array representing the current observation of the environment.
+        state (numpy.ndarray): A 1D array representing
+        the current observation of the environment.
         weight (numpy.ndarray): A 2D array of random weights.
 
     Returns:
-        tuple: The action (int) chosen according to the policy and the corresponding gradient (numpy.ndarray).
+        tuple: The action (int) chosen according
+        to the policy and the corresponding gradient.
     """
     probs = softmax(np.dot(state, weight))  # Compute action probabilities
     action = np.random.choice(len(probs), p=probs)  # Sample an action
