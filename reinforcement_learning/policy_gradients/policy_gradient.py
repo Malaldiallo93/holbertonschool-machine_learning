@@ -6,49 +6,29 @@
 import numpy as np
 
 
-def policy(matrix, weight):
-    """
-        function that computes to policy with a weight of a matrix
-
-    :param matrix: matrix, state
-    :param weight: ndarray, weight to apply in policy
-
-    :return: matrix of proba for each possible action
-    """
-    # matrix product: score for each possible action
-    z = matrix @ weight
-
-    # Softmax: normalize exp scores = distribution proba of action
-    exp_z = np.exp(z - np.max(z, axis=1, keepdims=True))
-    softmax = exp_z / np.sum(exp_z, axis=1, keepdims=True)
-
-    return softmax
+def softmax(x):
+    """Compute softmax values for each set of scores in x."""
+    e_x = np.exp(x - np.max(x))  # Stability trick
+    return e_x / e_x.sum()
 
 
 def policy_gradient(state, weight):
     """
-        function that computes the Monte-Carlo policy gradient
+    Compute the Monte-Carlo policy gradient based on a state and a weight matrix.
 
-    :param state: matrix, current observation of the env
-    :param weight: matrix of random weight
+    Args:
+        state (numpy.ndarray): A 1D array representing the current observation of the environment.
+        weight (numpy.ndarray): A 2D array of random weights.
 
-    :return: action and gradient
+    Returns:
+        tuple: The action (int) chosen according to the policy and the corresponding gradient (numpy.ndarray).
     """
-    # calculate policy
-    probs = policy(state, weight)
+    probs = softmax(np.dot(state, weight))  # Compute action probabilities
+    action = np.random.choice(len(probs), p=probs)  # Sample an action
 
-    # choose action based on probs
-    action = np.random.choice(probs.shape[1], p=probs[0])
-
-    # init gradients
-    grad = np.zeros_like(weight)
-
-    # calculate gradients
-    for i in range(state.shape[1]):
-        for j in range(weight.shape[1]):
-            if j == action:
-                grad[i, j] = state[0, i] * (1 - probs[0, j])
-            else:
-                grad[i, j] = -state[0, i] * probs[0, j]
+    # Compute the gradient
+    d_softmax = np.diag(probs) - np.outer(probs, probs)
+    # Compute the gradient for the selected action
+    grad = d_softmax[:, action] @ state[:, None].T
 
     return action, grad
