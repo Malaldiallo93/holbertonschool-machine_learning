@@ -6,30 +6,43 @@
 import numpy as np
 
 
-def softmax(x):
-    """Compute softmax values for each set of scores in x."""
-    e_x = np.exp(x - np.max(x))  # Stability trick
-    return e_x / e_x.sum()
+def policy(matrix, weight):
+    """
+        policy building with weit and matrix
+
+    :param matrix: matrix, state
+    :param weight: ndarray, weight to apply in policy
+
+    :return: matrix of proba for each possible action
+    """
+    matrix = np.atleast_2d(matrix)
+    z = matrix @ weight
+    exp_z = np.exp(z - np.max(z, axis=1, keepdims=True))
+    softmax = exp_z / np.sum(exp_z, axis=1, keepdims=True)
+
+    return softmax
 
 
 def policy_gradient(state, weight):
     """
-    Compute the Monte-Carlo policy gradient based
-    on a state and a weight matrix.
-    Args:
-        state (numpy.ndarray): A 1D array representing
-        the current observation of the environment.
-        weight (numpy.ndarray): A 2D array of random weights.
-    Returns:
-        tuple: The action (int) chosen according to the policy
-        and the corresponding gradient.
-    """
-    probs = softmax(np.dot(state, weight))
-    action = int(np.random.choice(len(probs), p=probs))
+        Monte-carlo policy gradient
 
-    # Compute the gradient
-    d_log = np.zeros_like(probs)
-    d_log[action] = 1 / probs[action]
-    grad = np.outer(state, d_log - probs)
+    :param state: matrix, current observation of the environment
+    :param weight: matrix of random weights
+
+    :return: chosen action and its corresponding gradient
+    """
+    state = np.atleast_2d(state)
+    probs = policy(state, weight)
+
+    action = np.random.choice(probs.shape[1], p=probs[0])
+
+    grad = np.zeros_like(weight)
+
+    for vert in range(state.shape[1]):
+        for hor in range(weight.shape[1]):
+            grad[vert, hor] = state[0, vert] * ((1 - probs[0, hor])
+                                                if hor == action
+                                                else -probs[0, hor])
 
     return action, grad

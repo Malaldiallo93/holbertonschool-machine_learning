@@ -1,65 +1,55 @@
 #!/usr/bin/env python3
 """
-    Policy Gradient training
+    Policy Gradient Training Script
 """
 import numpy as np
-from policy_gradient import policy_gradient
+policy_gradient = __import__('policy_gradient').policy_gradient
 
 
 def train(env, nb_episodes, alpha=0.000045, gamma=0.98, show_result=False):
     """
-        function implements a full training
+        Runs the policy gradient training loop.
 
-    :param env: initial env
-    :param nb_episodes: number of episodes used for training
+    :param env: the environment instance
+    :param nb_episodes: number of episodes for training
     :param alpha: learning rate
     :param gamma: discount factor
-    :param show_result: render env every 1000 episodes computed
+    :param show_result: whether to render the environment every 1000 episodes
 
-    :return: sum of all rewards during one episode loop
+    :return: list of episode scores
     """
-    # Initialize the weight
     weight = np.random.rand(*env.observation_space.shape, env.action_space.n)
 
-    # Initialize the scores
     scores = []
 
     for episode in range(1, nb_episodes + 1):
-        state = env.reset()[None, :]
-        grad = 0
+        obs, _ = env.reset()
+        state = obs[None, :]
+        grad = np.zeros_like(weight)
         score = 0
         done = False
 
         while not done:
-            # Compute the action and the gradient
             action, delta_grad = policy_gradient(state, weight)
 
-            # Take a step in the environment
-            new_state, reward, done, info = env.step(action)
+            new_state, reward, done, info, truncated = env.step(action)
             new_state = new_state[None, :]
 
-            # Update the score
             score += reward
 
-            # Compute the gradient
             grad += delta_grad
 
-            # Update the weight
-            weight += (alpha * grad
-                       * (reward + gamma * np.max(new_state.dot(weight))
-                          * (not done) - state.dot(weight)[0, action]))
+            weight += alpha * grad * (
+                (reward + gamma * np.max(new_state.dot(weight)) * (not done))
+                - state.dot(weight)[0, action]
+            )
 
-            # Update the state
             state = new_state
 
-        # Store the score
         scores.append(score)
 
-        # Print the current episode number and the score
-        print("Episode: {}, Score: {}".format(
-            episode, score), end="\r", flush=False)
+        print(f"Episode: {episode}, Score: {score}", end="\r", flush=True)
 
-        # Render the environment every 1000 episodes
         if show_result and episode % 1000 == 0:
             env.render()
 
