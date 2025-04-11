@@ -1,49 +1,48 @@
 #!/usr/bin/env python3
 """
-Creates a pandas DataFrame from a NumPy
-ndarray with alphabetical column labels.
+Creates a pd.DataFrame from a np.ndarray
 """
-
 import pandas as pd
-import numpy as np
 
 
 def from_numpy(array):
     """
-    Converts a NumPy array into a pandas DataFrame.
+    Creates a pd.DataFrame from a np.ndarray
 
     Parameters:
-        array (np.ndarray): The NumPy array to convert.
-        Assumes the array has two dimensions (rows and columns).
+        array: The NumPy array to convert (assumes it's already defined
+        externally)
 
     Returns:
-        pd.DataFrame: A DataFrame created from the NumPy array with
-        alphabetically labeled columns (A, B, C, ..., up to Z).
-        Supports up to 26 columns.
+        pd.DataFrame: The newly created DataFrame with alphabetical column
+        labels
     """
-    # Get the number of columns from the array
+    # Get number of columns in the array
     _, num_cols = array.shape
 
-    # Alphabet for generating column labels
+    # Alphabet en dur, pour générer les labels de colonnes
     alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
-    # Generate column labels (A, B, C, ...) up to a maximum of 26 columns
+    # Génère les labels pour les colonnes (A, B, C, ...)
+    # en se limitant à 26 caractères max
     column_labels = list(alphabet[:min(num_cols, 26)])
 
-    # Create the DataFrame with the generated column labels
+    # Crée le DataFrame avec les labels de colonne
     df = pd.DataFrame(array, columns=column_labels)
+
     return df
 
 
-# Example usage (for testing purposes only)
+# Exemple d'utilisation (à titre de test seulement) :
 if __name__ == "__main__":
-    # Example data as a NumPy array
-    data = np.array([
+    # Supposons que 'data' soit un np.ndarray déjà défini ailleurs ;
+    # on montre ici un tableau d'exemple en pur Python pour la démo :
+    data = [
         [1, 2, 3],
         [4, 5, 6],
         [7, 8, 9]
-    ])
+    ]
 
-    # Convert to DataFrame
+    # Conversion en DataFrame
     df_result = from_numpy(data)
     print(df_result)
