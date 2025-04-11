@@ -13,12 +13,12 @@ def from_numpy(array):
     Converts a NumPy array into a pandas DataFrame.
 
     Parameters:
-        array (np.ndarray): The NumPy array to convert. 
+        array (np.ndarray): The NumPy array to convert.
         Assumes the array has two dimensions (rows and columns).
 
     Returns:
-        pd.DataFrame: A DataFrame created from the NumPy array with 
-        alphabetically labeled columns (A, B, C, ..., up to Z). 
+        pd.DataFrame: A DataFrame created from the NumPy array with
+        alphabetically labeled columns (A, B, C, ..., up to Z).
         Supports up to 26 columns.
     """
     # Get the number of columns from the array
@@ -26,11 +26,24 @@ def from_numpy(array):
 
     # Alphabet for generating column labels
     alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
- 
+
     # Generate column labels (A, B, C, ...) up to a maximum of 26 columns
     column_labels = list(alphabet[:min(num_cols, 26)])
 
     # Create the DataFrame with the generated column labels
     df = pd.DataFrame(array, columns=column_labels)
-
     return df
+
+
+# Example usage (for testing purposes only)
+if __name__ == "__main__":
+    # Example data as a NumPy array
+    data = np.array([
+        [1, 2, 3],
+        [4, 5, 6],
+        [7, 8, 9]
+    ])
+
+    # Convert to DataFrame
+    df_result = from_numpy(data)
+    print(df_result)
