@@ -1,19 +1,13 @@
--- Function that divides (and return) two numbers
-DROP FUNCTION IF EXISTS SafeDiv;
-
 DELIMITER $$
 
-CREATE FUNCTION SafeDiv(
-    a INT,
-    b INT)
-    RETURNS FLOAT
+CREATE FUNCTION SafeDiv(a INT, b INT)
+RETURNS INT
+DETERMINISTIC
+BEGIN
+    IF b = 0 THEN
+        RETURN NULL;
+    END IF;
+    RETURN a DIV b;
+END$$
 
-    BEGIN
-        IF b = 0 THEN
-            RETURN 0;
-        ELSE
-            RETURN a / b;
-        END IF;
-    END $$
-
-DELIMITER;
+DELIMITER ;
