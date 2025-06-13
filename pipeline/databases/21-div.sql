@@ -5,7 +5,7 @@ RETURNS INT
 DETERMINISTIC
 BEGIN
     IF b = 0 THEN
-        RETURN NULL;
+        RETURN 0;
     END IF;
     RETURN a DIV b;
 END$$
